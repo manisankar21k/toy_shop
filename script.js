@@ -1,17 +1,15 @@
 /* ==========================================================================
-   Toy Planet — Scripts
+   Toy Planet — Premium Scripts
    ========================================================================== */
 
-
 document.addEventListener('DOMContentLoaded', () => {
-
   const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- Preloader ---------- */
   const preloader = document.getElementById('preloader');
   window.addEventListener('load', () => {
-    setTimeout(() => preloader.classList.add('hidden'), 400);
+    setTimeout(() => preloader.classList.add('hidden'), 500);
   });
 
   /* ---------- Footer year ---------- */
@@ -20,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---------- Navbar scroll effect ---------- */
   const navbar = document.getElementById('navbar');
   const scrollProgress = document.getElementById('scrollProgress');
+  const backToTop = document.getElementById('backToTop');
+
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 30);
     backToTop.classList.toggle('show', window.scrollY > 500);
@@ -56,31 +56,33 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', () => {
     let current = '';
     sections.forEach(section => {
-      const top = section.offsetTop - 120;
+      const top = section.offsetTop - 130;
       if (window.scrollY >= top) current = section.getAttribute('id');
     });
     navItems.forEach(item => {
       const isActive = item.getAttribute('href') === `#${current}`;
       item.classList.toggle('active', isActive);
-      if (isActive) moveIndicatorTo(item);
+      if (isActive && !isTouch) moveIndicatorTo(item);
     });
   });
 
-  navItems.forEach(item => {
-    item.addEventListener('mouseenter', () => moveIndicatorTo(item));
-  });
-  document.getElementById('navLinks').addEventListener('mouseleave', () => {
-    const active = document.querySelector('.nav-link.active');
-    moveIndicatorTo(active);
-  });
-  window.addEventListener('load', () => moveIndicatorTo(document.querySelector('.nav-link.active')));
+  if (!isTouch) {
+    navItems.forEach(item => {
+      item.addEventListener('mouseenter', () => moveIndicatorTo(item));
+    });
+    document.getElementById('navLinks').addEventListener('mouseleave', () => {
+      const active = document.querySelector('.nav-link.active');
+      moveIndicatorTo(active);
+    });
+    window.addEventListener('load', () => moveIndicatorTo(document.querySelector('.nav-link.active')));
+  }
 
   /* ---------- Scroll reveal animation ---------- */
   const revealEls = document.querySelectorAll('.reveal');
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('active'), i * 60);
+        setTimeout(() => entry.target.classList.add('active'), i * 80);
         revealObserver.unobserve(entry.target);
       }
     });
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!entry.isIntersecting) return;
       const el = entry.target;
       const target = +el.dataset.target;
-      const duration = 1600;
+      const duration = 1800;
       const startTime = performance.now();
       const animate = (now) => {
         const progress = Math.min((now - startTime) / duration, 1);
@@ -111,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- Hero floating particles ---------- */
   const particlesContainer = document.getElementById('particles');
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 30; i++) {
     const p = document.createElement('span');
     const size = Math.random() * 6 + 3;
     p.style.width = `${size}px`;
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function startTestimonials() {
     clearInterval(testimonialTimer);
-    testimonialTimer = setInterval(advanceTestimonials, 5000);
+    testimonialTimer = setInterval(advanceTestimonials, 6000);
   }
 
   testimonialPrev.addEventListener('click', () => {
@@ -168,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
   startTestimonials();
 
   /* ---------- Back to top ---------- */
-  const backToTop = document.getElementById('backToTop');
   backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   /* ---------- Contact form (front-end only) ---------- */
@@ -194,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dotX = e.clientX;
       dotY = e.clientY;
     }, { passive: true });
+
     const animateCursor = () => {
       ringX += (dotX - ringX) * 0.18;
       ringY += (dotY - ringY) * 0.18;
@@ -206,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousedown', () => cursorRing.classList.add('clicked'));
     document.addEventListener('mouseup', () => cursorRing.classList.remove('clicked'));
 
-    document.querySelectorAll('a, button, input, textarea, .product-card, .why-card, .about-card').forEach(el => {
+    document.querySelectorAll('a, button, input, textarea, select, .product-card, .why-card, .about-card').forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursorRing.classList.add('hovered');
         cursorDot.classList.add('shrink');
@@ -253,9 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const rotateX = ((y / rect.height) - 0.5) * -12;
-        const rotateY = ((x / rect.width) - 0.5) * 12;
-        card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px) scale(1.02)`;
+        const rotateX = ((y / rect.height) - 0.5) * -10;
+        const rotateY = ((x / rect.width) - 0.5) * 10;
+        card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.02)`;
       });
       card.addEventListener('mouseleave', () => {
         card.style.transform = '';
@@ -271,9 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const bounds = hero.getBoundingClientRect();
       const offsetX = (e.clientX - bounds.left) / bounds.width - 0.5;
       const offsetY = (e.clientY - bounds.top) / bounds.height - 0.5;
-      hero.style.setProperty('--hero-shift-x', `${offsetX * 14}px`);
-      hero.style.setProperty('--hero-shift-y', `${offsetY * 10}px`);
+      hero.style.setProperty('--hero-shift-x', `${offsetX * 16}px`);
+      hero.style.setProperty('--hero-shift-y', `${offsetY * 12}px`);
     }, { passive: true });
+
     hero.addEventListener('pointerleave', () => {
       hero.style.setProperty('--hero-shift-x', '0px');
       hero.style.setProperty('--hero-shift-y', '0px');
@@ -285,9 +288,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const bounds = button.getBoundingClientRect();
         const offsetX = (e.clientX - bounds.left) / bounds.width - 0.5;
         const offsetY = (e.clientY - bounds.top) / bounds.height - 0.5;
-        button.style.setProperty('--magnetic-x', `${offsetX * 10}px`);
-        button.style.setProperty('--magnetic-y', `${offsetY * 8}px`);
+        button.style.setProperty('--magnetic-x', `${offsetX * 12}px`);
+        button.style.setProperty('--magnetic-y', `${offsetY * 10}px`);
       }, { passive: true });
+
       button.addEventListener('pointerleave', () => {
         button.style.setProperty('--magnetic-x', '0px');
         button.style.setProperty('--magnetic-y', '0px');
@@ -341,8 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- Confetti burst ---------- */
   function launchConfetti() {
-    const colors = ['#1f3a7a', '#c9a66b', '#3a63c0', '#dabf8e', '#0a1128'];
-    for (let i = 0; i < 60; i++) {
+    const colors = ['#c9a66b', '#1f3a7a', '#dabf8e', '#3a63c0', '#0a1128', '#ef476f'];
+    for (let i = 0; i < 80; i++) {
       const piece = document.createElement('span');
       piece.className = 'confetti-piece';
       piece.style.left = `${Math.random() * 100}vw`;
@@ -353,6 +357,4 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => piece.remove(), 3500);
     }
   }
-
 });
-
